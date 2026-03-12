@@ -1,0 +1,1 @@
+FastAPI BFF Proxy — A secure Backend-for-Frontend service that acts as an intermediary between a React frontend and backend API Gateway. Features include OAuth2/OpenID Connect authentication via Keycloak SSO, Redis-backed session management with httpOnly cookies (preventing XSS token theft), and transparent API proxying with automatic access token injection.
