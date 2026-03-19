@@ -12,7 +12,7 @@ class AuthService:
     def __init__(self, redis_client: redis.Redis):
         self.redis = redis_client
 
-    def get_sso_login_url(self) -> str:
+    def get_sso_login_url(self, state: str) -> str:
         # 1. Tentukan endpoint auth Keycloak
         auth_endpoint = f"{security_settings.KEYCLOAK_ISSUER}/protocol/openid-connect/auth"
 
@@ -21,7 +21,8 @@ class AuthService:
             "client_id": security_settings.KEYCLOAK_CLIENT_ID,
             "response_type": "code",      
             "redirect_uri": security_settings.KEYCLOAK_REDIRECT_URI,
-            "scope": "openid profile email" 
+            "scope": "openid profile email",
+            "state": state,
         }
 
         # 3. Encode jadi URL string
@@ -44,7 +45,7 @@ class AuthService:
         }
 
         # Nembak ke Keycloak (Back-channel)
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=15.0) as client:
             response = await client.post(token_endpoint, data=payload)
             
             if response.status_code != 200:
